@@ -1,0 +1,17 @@
+[Unit]
+Description = golang-ip
+After = network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/golang-myip
+ExecStart = /opt/golang-myip/build/server.x86_64 --port 80
+ExecReload=/bin/kill -HUP $MAINPID
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=Golang-ip
+Environment=PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:
+[Install]
+WantedBy = multi-user.target

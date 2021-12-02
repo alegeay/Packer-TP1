@@ -23,31 +23,9 @@ source "qemu" "example" {
 
 
 build {  
-  sources = ["source.qemu.example"]
-
- provisioner "file" {
-    destination = "/etc/systemd/system/golang-myip.service"
-    source      = "./golang-myip.service"
-  }
-
-
- provisioner "shell" {
-    inline = [
-      "echo 'Je suis vivant :) !'",
-      "dnf install git go make -y",
-      "echo 'Les paquets sont installés chef !'",
-      "git clone https://github.com/BastienBalaud/golang-myip",
-      "cd golang-myip/",
-      "make",
-      "echo 'Hop MyIP est pret à etre lancer'",
-      "cd build/",
-      "mv /root/golang-myip /opt/golang-myip/",
-      "/sbin/restorecon -v /opt/golang-myip/build/server.x86_64",
-      "systemctl daemon-reload",
-      "systemctl start golang-myip",
-      "systemctl enable golang-myip",
-      "systemctl status golang-myip"
-    ]
-  }
+    sources = ["source.qemu.example"]
+    provisioner "ansible" {
+      playbook_file = "./playbook.yml"
+    }
 
 }

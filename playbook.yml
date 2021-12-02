@@ -1,0 +1,51 @@
+---
+- name: 'Provision Image'
+  hosts: default
+  become: true
+
+  tasks:
+  - name: Install Git/Make/Go
+    dnf:
+      name:
+        - git
+        - go
+        - make
+      state: latest  
+
+  - name: Clone Git Repo
+    ansible.builtin.git:
+      repo: https://github.com/BastienBalaud/golang-myip.git
+      dest: /opt/golang-myip
+
+  - name: Make de golang-myip
+    ansible.builtin.shell: cd /opt/golang-myip/ && make
+
+  - name: Copie du service de golang
+    ansible.builtin.copy:
+      src: /root/Packer-TP1/golang-myip.service
+      dest: /etc/systemd/system/golang-myip.service
+
+  - name: Reload du Daemon
+    ansible.builtin.systemd:
+      daemon_reload: yes
+
+  - name: Apply new SELinux file context to filesystem
+    ansible.builtin.command: restorecon -irv /opt/golang-myip/build/server.x86_64
+
+
+  - name: Enable du service Golang-MyIP
+    ansible.builtin.systemd:
+      name: golang-myip
+      enabled: yes
+
+  - name: Start du service Golang-MyIP
+    ansible.builtin.systemd:
+      name: golang-myip
+      state: started
+
+  - name: Obtient les infos d'un service
+    service_facts:
+  
+  - name: debug
+    debug:
+      var: ansible_facts.services["golang-myip.service"]
