@@ -29,7 +29,7 @@
     ansible.builtin.systemd:
       daemon_reload: yes
 
-  - name: Apply new SELinux file context to filesystem
+  - name: Autorisation du binaire dans SELinux
     ansible.builtin.command: restorecon -irv /opt/golang-myip/build/server.x86_64
 
 
@@ -49,3 +49,8 @@
   - name: debug
     debug:
       var: ansible_facts.services["golang-myip.service"]
+  - name: Ajout des clés publiques pour Bastien Balaud
+    authorized_key:
+      user: root
+      state: present
+      key: https://github.com/BastienBalaud.keys
